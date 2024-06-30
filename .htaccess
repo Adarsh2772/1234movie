@@ -1,0 +1,63 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+    
+    <Files *.php>
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+<Files index.php>
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+# Prevent access to .git directory
+RedirectMatch 404 /\.git
+
+# Deny access to .git/logs/HEAD
+<Files "HEAD">
+    Require all denied
+</Files>
+
+# Disable Directory listing
+Options -Indexes
+
+# block files which needs to be hidden // in here specify .example extension of the file
+<Files ~ "\.(env|json|config.js|md|gitignore|gitattributes|lock)$">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# in here specify full file name sperator '|'
+<Files ~ "(artisan)$">
+    Order allow,deny
+    Deny from all
+</Files>
+</IfModule>
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-SSL} !on
+RewriteCond %{HTTP_HOST} ^duedeck\.com$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.duedeck\.com$
+RewriteRule ^/?$ "https\:\/\/duedeck\.com\/" [R=301,L]
+RewriteCond %{HTTP_HOST} ^eligo\.co\.in$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.eligo\.co\.in$
+RewriteRule ^/?$ "https\:\/\/duedeck\.com\/" [R=301,L]
+
